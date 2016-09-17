@@ -8,4 +8,8 @@ export class Page1 {
 
   constructor(public navCtrl: NavController) {
   }
+
+  testFunc() {
+      console.log('hiiiii');
+  }
 }
