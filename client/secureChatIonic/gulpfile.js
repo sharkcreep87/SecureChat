@@ -1,8 +1,9 @@
+// Please notice gulp uses fs.notify, which will not work with vagrant
 var gulp = require('gulp'),
-    gulpWatch = require('gulp-watch'),
-    del = require('del'),
-    runSequence = require('run-sequence'),
-    argv = process.argv;
+	gulpWatch = require('gulp-watch'),
+	del = require('del'),
+	runSequence = require('run-sequence'),
+	argv = process.argv;
 
 
 /**
@@ -36,39 +37,49 @@ var tslint = require('ionic-gulp-tslint');
 
 var isRelease = argv.indexOf('--release') > -1;
 
-gulp.task('watch', ['clean'], function(done){
-  runSequence(
-    ['sass', 'html', 'fonts', 'scripts'],
-    function(){
-      gulpWatch('app/**/*.scss', function(){ gulp.start('sass'); });
-      gulpWatch('app/**/*.html', function(){ gulp.start('html'); });
-      buildBrowserify({ watch: true }).on('end', done);
-    }
-  );
+// Task to watch app folder for changes to semi e-build the app
+gulp.task('watch', ['clean'], function(done) {
+	runSequence(
+		['sass', 'html', 'fonts', 'scripts'],
+		function() {
+			gulpWatch('app/**/*.scss', function() {
+				gulp.start('sass');
+			});
+			gulpWatch('app/**/*.html', function() {
+				gulp.start('html');
+			});
+			gulpWatch('app/**/*.ts', function() {
+				gulp.start('scripts');
+			});
+			buildBrowserify({
+				watch: true
+			}).on('end', done);
+		}
+	);
 });
 
-gulp.task('build', ['clean'], function(done){
-  runSequence(
-    ['sass', 'html', 'fonts', 'scripts'],
-    function(){
-      buildBrowserify({
-        minify: isRelease,
-        browserifyOptions: {
-          debug: !isRelease
-        },
-        uglifyOptions: {
-          mangle: false
-        }
-      }).on('end', done);
-    }
-  );
+gulp.task('build', ['clean'], function(done) {
+	runSequence(
+		['sass', 'html', 'fonts', 'scripts'],
+		function() {
+			buildBrowserify({
+				minify: isRelease,
+				browserifyOptions: {
+					debug: !isRelease
+				},
+				uglifyOptions: {
+					mangle: false
+				}
+			}).on('end', done);
+		}
+	);
 });
 
 gulp.task('sass', buildSass);
 gulp.task('html', copyHTML);
 gulp.task('fonts', copyFonts);
 gulp.task('scripts', copyScripts);
-gulp.task('clean', function(){
-  return del('www/build');
+gulp.task('clean', function() {
+	return del('www/build');
 });
 gulp.task('lint', tslint);
