@@ -23,7 +23,7 @@ class MyApp {
     this.pages = [
       { title: 'Page One', component: Page1 },
       { title: 'Page Two', component: Page2 },
-      { title: 'Login', component: AuthLoginPage },
+      { title: 'Logic', component: AuthLoginPage },
     ];
 
   }

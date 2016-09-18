@@ -1,4 +1,3 @@
-// Please notice gulp uses fs.notify, which will not work with vagrant
 var gulp = require('gulp'),
 	gulpWatch = require('gulp-watch'),
 	del = require('del'),
@@ -37,18 +36,25 @@ var tslint = require('ionic-gulp-tslint');
 
 var isRelease = argv.indexOf('--release') > -1;
 
+//Going to use polling for gulp watch because synced folders don't emit filesystem changes
+//https://github.com/floatdrop/gulp-watch/issues/213
+var watchOptions = {
+	usePolling: true,
+	interval: 500
+};
+
 // Task to watch app folder for changes to semi e-build the app
 gulp.task('watch', ['clean'], function(done) {
 	runSequence(
 		['sass', 'html', 'fonts', 'scripts'],
 		function() {
-			gulpWatch('app/**/*.scss', function() {
+			gulpWatch('app/**/*.scss', watchOptions, function() {
 				gulp.start('sass');
 			});
-			gulpWatch('app/**/*.html', function() {
+			gulpWatch('app/**/*.html', watchOptions, function() {
 				gulp.start('html');
 			});
-			gulpWatch('app/**/*.ts', function() {
+			gulpWatch('app/**/*.ts', watchOptions, function() {
 				gulp.start('scripts');
 			});
 			buildBrowserify({
